@@ -1,0 +1,9 @@
+.places-container {
+    display: flex;
+}
+.places {
+    width: 40%;
+}
+.map {
+    width: 60%;
+}

@@ -61,20 +61,24 @@ export default class Dashboard extends Component {
         if(this.state.places) {
             this.state.places.forEach((place, index) => {
                 place.expanded = !!place.expanded;
+                let avatar = "http://localhost:3000/api/Containers/" + place.id +"/download/logo.jpg?access_token=" + localStorage.getItem("token");
                 listPlaces.push(
                     (
-                        <Card expanded={place.expanded} key={place.id} id={place.id}>
+                        <Card expanded={place.expanded} key={'card' + place.id} id={place.id}>
                             <CardHeader
                                 title={place.name}
                                 subtitle={place.address}
-                            />
-                            <CardText>
+                                avatar={avatar}
+                            >
                                 <Toggle
                                     toggled={place.expanded}
                                     onToggle={this.handleExpandChange}
                                     key={'toggle' + place.id}
                                     id={'toggle-' + index}
                                 />
+                            </CardHeader>
+                            <CardText>
+
                             </CardText>
                         </Card>
                     )
@@ -84,6 +88,7 @@ export default class Dashboard extends Component {
                         lat={place.location.lat}
                         lng={place.location.lng}
                         text={place.name}
+                        key={'mapPoint' + place.id}
                     />)
                 );
             })

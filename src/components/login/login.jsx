@@ -6,7 +6,6 @@ import pizzaImg from './assets/images/pizza.jpg';
 import wingsImg from './assets/images/wings.jpg';
 import LoginService from '../../services/loginService';
 import Style from '../../scenes/styles';
-import { browserHistory } from 'react-router';
 
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -86,7 +85,7 @@ export default class Login extends Component {
             });
     }
     selectImage(imagesArray) {
-        if(document.getElementById('background-image')){
+        if(document.getElementById('background-images')){
             let index = Math.floor(Math.random()*imagesArray.length);
             this.setState({
                 image: imagesArray[index]

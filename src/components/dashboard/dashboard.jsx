@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 import Snackbar from 'material-ui/Snackbar';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
+import {Card,
+        CardHeader,
+        CardText } from 'material-ui/Card';
+import Paper from 'material-ui/Paper'
 import Toggle from 'material-ui/Toggle';
 import PlaceService from '../../services/placeService';
 import Style from '../../scenes/styles';
 import './dashboard.css';
+
+import GoogleMapReact from 'google-map-react';
+
+const MapPoint = ({text}) => <div>{text}</div>;
 
 const placeService = new PlaceService();
 export default class Dashboard extends Component {
@@ -15,10 +21,11 @@ export default class Dashboard extends Component {
         this.state = {
             snackbarOpen: false,
             snackbarMessage: '',
-            places,
+            places
         }
         this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
         this.getPlaces = this.getPlaces.bind(this);
+        this.handleExpandChange = this.handleExpandChange.bind(this);
     }
     getPlaces() {
         placeService.getAll()
@@ -36,38 +43,66 @@ export default class Dashboard extends Component {
     handleSnackbarClose() {
         this.setState({snackbarOpen: false});
     }
-    handleExpandChange(index) {
+    handleExpandChange(event, isInputChecked, element) {
+        let index = event.target.id.split('-')[1];
         let places = this.state.places;
         places[index].expanded = !!!places[index].expanded;
         this.setState({places,})
     }
+
+
     render() {
+        let defaultProps = {
+            center: {lat: 19.041714, lng: -98.1995117},
+            zoom: 12
+        };
+        let listPlaces = [];
         let renderPlaces = [];
-        if(this.state.places){
-             this.state.places.forEach( (place, index) => {
-                 renderPlaces.push( (
-                        <Card expanded={this.state.places[index].expanded} onExpandChange={this.handleExpandChange(index)}>
+        if(this.state.places) {
+            this.state.places.forEach((place, index) => {
+                place.expanded = !!place.expanded;
+                listPlaces.push(
+                    (
+                        <Card expanded={place.expanded} key={place.id} id={place.id}>
                             <CardHeader
                                 title={place.name}
                                 subtitle={place.address}
                             />
                             <CardText>
                                 <Toggle
-                                    toggled={this.state.places[index].expanded}
-                                    onToggle={this.handleExpandChange(index)}
+                                    toggled={place.expanded}
+                                    onToggle={this.handleExpandChange}
+                                    key={'toggle' + place.id}
+                                    id={'toggle-' + index}
                                 />
                             </CardText>
                         </Card>
                     )
-                )
-             })
+                );
+                renderPlaces.push(
+                    (<MapPoint
+                        lat={place.location.lat}
+                        lng={place.location.lng}
+                        text={place.name}
+                    />)
+                );
+            })
         }
         return (
-            <div className="places-container">
+            <div className="places-container max-height">
                 <div className="places">
-                    {renderPlaces}
+                    <Paper style={Style.maxHeight}>
+                        {listPlaces}
+                    </Paper>
                 </div>
-                <div className="map">2237472364726487236847263874238746</div>
+                <div className="map">
+                    <GoogleMapReact
+                        defaultCenter={defaultProps.center}
+                        defaultZoom={defaultProps.zoom}
+                    >
+                        {renderPlaces}
+                    </GoogleMapReact>
+                </div>
                 <Snackbar
                     open={this.state.snackbarOpen}
                     message={this.state.snackbarMessage}
@@ -78,43 +113,4 @@ export default class Dashboard extends Component {
             </div>
         );
     }
-
-    /*render() {
-        placeService.getAll()
-            .then(data => {
-                console.log(data);
-                return getRender(data);
-            })
-            .catch(err => {
-                this.setState({snackbarMessage: 'We could not get places list.'});
-                this.setState({snackbarOpen: true});
-                return getRender(undefined);
-            });
-
-        function getRender(places) {
-            let renderPlaces = '';
-            if(places) {
-                places.map(place => {
-                    return (
-                        <div>{place.name}</div>
-                    );
-                });
-            }
-            return (
-                <div className="places-container">
-                    <div className="places">
-                        {renderPlaces}
-                    </div>
-                    <div className="map">2237472364726487236847263874238746</div>
-                    <Snackbar
-                        open={this.state.snackbarOpen}
-                        message={this.state.snackbarMessage}
-                        autoHideDuration={4000}
-                        onRequestClose={this.handleSnackbarClose}
-                        bodyStyle={Style.dangerAlert}
-                    />
-                </div>
-            )
-        }
-    }*/
 }

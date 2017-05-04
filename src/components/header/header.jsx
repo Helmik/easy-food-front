@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import AppBar from 'material-ui/AppBar';
 
 export default class Header extends Component{
-    constructor() {
+    /*constructor() {
         super();
-    }
+    }*/
     render() {
         return (
             <AppBar

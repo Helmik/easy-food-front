@@ -32,3 +32,6 @@ body {
 .danger-alert{
   background-color: rgba(206, 0, 0, 0.870588);
 }
+.max-height{
+  height: 100%;
+}

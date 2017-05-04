@@ -9,7 +9,7 @@ class App extends Component {
         this.props.history.push('/login');
     }
     return (
-        <div>
+        <div className="max-height">
             <Header/>
             <Dashboard/>
         </div>

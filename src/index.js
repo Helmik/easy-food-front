@@ -4,7 +4,7 @@ import './index.css';
 import './components/login/login'
 import Login from './components/login/login';
 import App from './components/application/App';
-import { Router, Route, hashHistory, Switch } from 'react-router';
+import { Router, Route, Switch } from 'react-router';
 import createBrowserHistory  from 'history/createBrowserHistory';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';

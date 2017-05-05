@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import Snackbar from 'material-ui/Snackbar';
 import {Card,
         CardHeader,
-        CardText } from 'material-ui/Card';
+        CardActions,
+        CardText} from 'material-ui/Card';
 import Paper from 'material-ui/Paper'
 import Toggle from 'material-ui/Toggle';
+import FlatButton from 'material-ui/FlatButton';
 import PlaceService from '../../services/placeService';
 import Style from '../../scenes/styles';
 import './dashboard.css';
@@ -21,7 +23,8 @@ export default class Dashboard extends Component {
         this.state = {
             snackbarOpen: false,
             snackbarMessage: '',
-            places
+            places,
+            lastSelected: undefined
         }
         this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
         this.getPlaces = this.getPlaces.bind(this);
@@ -43,11 +46,28 @@ export default class Dashboard extends Component {
     handleSnackbarClose() {
         this.setState({snackbarOpen: false});
     }
-    handleExpandChange(event, isInputChecked, element) {
-        let index = event.target.id.split('-')[1];
-        let places = this.state.places;
-        places[index].expanded = !!!places[index].expanded;
-        this.setState({places,})
+    handleExpandChange(event) {
+        let classes;
+        let index;
+        if(event.target.tagName === 'DIV'){
+            classes = event.target.parentElement.className.split(' ');
+        } else {
+            classes = event.target.parentElement.parentElement.className.split(' ');
+        }
+        classes.forEach( class_ => {
+            if(class_.indexOf('flatButton') >= 0) {
+                index = class_.split('-')[1];
+            }
+        });
+        if(index) {
+            let places = this.state.places;
+            places[index].expanded = !!!places[index].expanded;
+            if(this.state.lastSelected && this.state.lastSelected !== index){
+                places[this.state.lastSelected].expanded = false;
+            }
+            this.setState({lastSelected: index});
+            this.setState({places,});
+        }
     }
 
 
@@ -62,6 +82,7 @@ export default class Dashboard extends Component {
             this.state.places.forEach((place, index) => {
                 place.expanded = !!place.expanded;
                 let avatar = "http://localhost:3000/api/Containers/" + place.id +"/download/logo.jpg?access_token=" + localStorage.getItem("token");
+                let infoButton = place.expanded ? 'View less' : 'View more';
                 listPlaces.push(
                     (
                         <Card expanded={place.expanded} key={'card' + place.id} id={place.id}>
@@ -70,16 +91,22 @@ export default class Dashboard extends Component {
                                 subtitle={place.address}
                                 avatar={avatar}
                             >
-                                <Toggle
+                                {/*<Toggle
                                     toggled={place.expanded}
                                     onToggle={this.handleExpandChange}
                                     key={'toggle' + place.id}
                                     id={'toggle-' + index}
-                                />
+                                />*/}
                             </CardHeader>
-                            <CardText>
-
+                            <CardText expandable={!place.expanded}>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
+                                Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
+                                Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
                             </CardText>
+                            <CardActions>
+                                <FlatButton label={infoButton} fullWidth={true} onTouchTap={this.handleExpandChange} className={'flatButton-' + index} key={'flatButton-' + index}/>
+                            </CardActions>
                         </Card>
                     )
                 );

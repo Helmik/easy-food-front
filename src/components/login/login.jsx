@@ -85,7 +85,7 @@ export default class Login extends Component {
             });
     }
     selectImage(imagesArray) {
-        if(document.getElementById('background-images')){
+        if(document.getElementById('background-image')){
             let index = Math.floor(Math.random()*imagesArray.length);
             this.setState({
                 image: imagesArray[index]
